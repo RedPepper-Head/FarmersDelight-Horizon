@@ -1,6 +1,8 @@
 //! Standalone, testable gameplay primitives for Farmer's Delight on Horizon.
 //! This crate does not yet register content or install hooks into Horizon.
 
+pub mod inventory;
+
 pub mod cooking {
     /// Identifies an ingredient or output by its namespaced item id.
     #[derive(Debug, Clone, Copy, PartialEq, Eq)]
