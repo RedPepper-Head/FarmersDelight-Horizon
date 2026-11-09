@@ -1,0 +1,56 @@
+name: Native Horizon mixin plan (manual)
+
+on:
+  workflow_dispatch:
+    inputs:
+      mixins_revision:
+        description: "Verified full 40-character horizon-mixins Git SHA"
+        required: true
+        type: string
+
+jobs:
+  native-plan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Validate supplied revision
+        env:
+          MIXINS_REVISION: ${{ inputs.mixins_revision }}
+        run: |
+          if ! [[ "$MIXINS_REVISION" =~ ^[0-9a-f]{40}$ ]]; then
+            echo "Provide a full lowercase 40-character commit SHA"
+            exit 1
+          fi
+      - name: Checkout mod
+        uses: actions/checkout@v4
+        with:
+          path: mod
+      - name: Checkout target Horizon Nightly source
+        uses: actions/checkout@v4
+        with:
+          repository: horizon-rust/horizon
+          ref: fdc87aecdbd116bf1e08adcd062fcbaea8c2e2ca
+          path: horizon
+      - name: Checkout selected horizon-mixins engine
+        uses: actions/checkout@v4
+        with:
+          repository: horizon-rust/horizon-mixins
+          ref: ${{ inputs.mixins_revision }}
+          path: mixin-engine
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: "1.95.0"
+      - name: Plan native injection against pinned Horizon source
+        run: |
+          cargo run --locked --manifest-path mixin-engine/Cargo.toml \
+            -p horizon-mixins-cli -- plan \
+            --workspace horizon --mods mod/mixins \
+            --out native-plan.json
+      - name: Upload mixin plan
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: native-plan
+          path: native-plan.json
+          if-no-files-found: ignore
