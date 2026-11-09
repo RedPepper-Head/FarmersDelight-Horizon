@@ -44,10 +44,16 @@ def package(repo: Path, output: Path, mixins: str) -> None:
         "mixins": mixins,
     }
     output.parent.mkdir(parents=True, exist_ok=True)
+    contents = {
+        "horizon-native.json": (json.dumps(manifest, indent=2, sort_keys=True) + "\n").encode("utf-8")
+    }
+    contents.update({rel: (repo / rel).read_bytes() for rel in FILES})
     with zipfile.ZipFile(output, "w", compression=zipfile.ZIP_DEFLATED) as archive:
-        archive.writestr("horizon-native.json", json.dumps(manifest, indent=2) + "\n")
-        for rel in FILES:
-            archive.write(repo / rel, arcname=rel)
+        for rel, data in sorted(contents.items()):
+            entry = zipfile.ZipInfo(rel, (2026, 1, 1, 0, 0, 0))
+            entry.compress_type = zipfile.ZIP_DEFLATED
+            entry.external_attr = 0o100644 << 16
+            archive.writestr(entry, data)
     with zipfile.ZipFile(output) as archive:
         if sorted(archive.namelist()) != sorted(("horizon-native.json", *FILES)):
             raise ValueError("Unexpected package entries")
