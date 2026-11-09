@@ -28,3 +28,5 @@ jobs:
             echo "Invalid mixins pin was incorrectly accepted"
             exit 1
           fi
+      - name: Test native archive format
+        run: python3 -m unittest discover -s tools -p 'test_*.py' -v
