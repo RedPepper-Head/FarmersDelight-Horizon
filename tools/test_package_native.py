@@ -38,6 +38,14 @@ class NativePackageTests(unittest.TestCase):
                 for path in FILES:
                     self.assertEqual(archive.read(path), (self.repo / path).read_bytes())
 
+    def test_package_is_reproducible(self):
+        with tempfile.TemporaryDirectory() as directory:
+            first = Path(directory) / "first.hnmod"
+            second = Path(directory) / "second.hnmod"
+            package(self.repo, first, "0" * 40)
+            package(self.repo, second, "0" * 40)
+            self.assertEqual(first.read_bytes(), second.read_bytes())
+
     def test_rejects_invalid_revision(self):
         with tempfile.TemporaryDirectory() as directory:
             destination = Path(directory) / "invalid.hnmod"
