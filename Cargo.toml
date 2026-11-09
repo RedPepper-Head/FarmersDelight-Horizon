@@ -1,0 +1,9 @@
+[package]
+name = "farmers-delight-horizon"
+version = "0.1.0"
+edition = "2024"
+description = "Native Rust gameplay logic for a future Farmer's Delight port to Horizon"
+publish = false
+
+[lib]
+path = "src/lib.rs"
