@@ -71,23 +71,23 @@ pub mod cooking {
                     },
                 ],
                 output: Ingredient {
-                        item: "farmersdelight:example_meal",
-                        count: 1,
-                    },
+                    item: "farmersdelight:example_meal",
+                    count: 1,
+                },
             };
             let inventory = [
                 Ingredient {
-                        item: "farmersdelight:tomato",
-                        count: 1,
-                    },
+                    item: "farmersdelight:tomato",
+                    count: 1,
+                },
                 Ingredient {
-                        item: "farmersdelight:tomato",
-                        count: 1,
-                    },
+                    item: "farmersdelight:tomato",
+                    count: 1,
+                },
                 Ingredient {
-                        item: "minecraft:bowl",
-                        count: 1,
-                    },
+                    item: "minecraft:bowl",
+                    count: 1,
+                },
             ];
             assert!(can_cook(&recipe, &inventory));
         }
@@ -100,9 +100,9 @@ pub mod cooking {
                         count: 2,
                     }],
                 output: Ingredient {
-                        item: "farmersdelight:example_meal",
-                        count: 1,
-                    },
+                    item: "farmersdelight:example_meal",
+                    count: 1,
+                },
             };
             assert!(!can_cook(
                 &recipe,
@@ -127,9 +127,9 @@ pub mod cooking {
                     },
                 ],
                 output: Ingredient {
-                        item: "farmersdelight:example_meal",
-                        count: 1,
-                    },
+                    item: "farmersdelight:example_meal",
+                    count: 1,
+                },
             };
             assert!(!can_cook(
                 &recipe,
@@ -148,9 +148,9 @@ pub mod cooking {
                         count: 0,
                     }],
                 output: Ingredient {
-                        item: "farmersdelight:example_meal",
-                        count: 1,
-                    },
+                    item: "farmersdelight:example_meal",
+                    count: 1,
+                },
             };
             assert!(!can_cook(&recipe, &[]));
         }
