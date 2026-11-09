@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 """Package a pinned Horizon native mixin bundle (stdlib only)."""
 import argparse
+import hashlib
 import json
 import re
 import sys
+import tomllib
 import zipfile
 from pathlib import Path
 
@@ -23,13 +25,13 @@ def package(repo: Path, output: Path, mixins: str) -> None:
     if not HEX40.fullmatch(mixins):
         raise ValueError("--mixins must be a full lowercase 40-character Git commit SHA")
     toml = (repo / FILES[0]).read_text(encoding="utf-8")
-    for expected in (
-        f'id = "{MOD_ID}"',
-        f'version = "{VERSION}"',
-        f'horizon_revision = "{HORIZON}"',
-    ):
-        if expected not in toml:
-            raise ValueError(f"Unexpected mixin manifest; missing {expected}")
+    parsed = tomllib.loads(toml)
+    if parsed.get("mod", {}).get("id") != MOD_ID:
+        raise ValueError("Unexpected mixin mod id")
+    if parsed["mod"].get("version") != VERSION:
+        raise ValueError("Unexpected mixin version")
+    if parsed.get("compatibility", {}).get("horizon_revision") != HORIZON:
+        raise ValueError("Unexpected Horizon revision")
     for rel in FILES:
         if not (repo / rel).is_file():
             raise FileNotFoundError(repo / rel)
@@ -49,12 +51,13 @@ def package(repo: Path, output: Path, mixins: str) -> None:
     with zipfile.ZipFile(output) as archive:
         if sorted(archive.namelist()) != sorted(("horizon-native.json", *FILES)):
             raise ValueError("Unexpected package entries")
-    print(f"Created {output} (not tested against Horizon)")
+    digest = hashlib.sha256(output.read_bytes()).hexdigest()
+    print(f"Created {output} (sha256: {digest}; not tested against Horizon)")
 
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--mixins", required=True, help="Verified 40-character horizon-mixins commit SHA")
+    parser.add_argument("--mixins", required=True, help="40-character horizon-mixins commit SHA (verify against the target launcher before use)")
     parser.add_argument("--repo", type=Path, default=Path(__file__).resolve().parents[1])
     parser.add_argument("--output", type=Path, default=Path("dist/farmers_delight_horizon-0.1.0.hnmod"))
     args = parser.parse_args()
