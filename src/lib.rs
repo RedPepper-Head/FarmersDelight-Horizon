@@ -96,9 +96,9 @@ pub mod cooking {
         fn rejects_missing_ingredient() {
             let recipe = Recipe {
                 ingredients: vec![Ingredient {
-                        item: "farmersdelight:tomato",
-                        count: 2,
-                    }],
+                    item: "farmersdelight:tomato",
+                    count: 2,
+                }],
                 output: Ingredient {
                     item: "farmersdelight:example_meal",
                     count: 1,
@@ -144,9 +144,9 @@ pub mod cooking {
         fn rejects_zero_quantity() {
             let recipe = Recipe {
                 ingredients: vec![Ingredient {
-                        item: "farmersdelight:tomato",
-                        count: 0,
-                    }],
+                    item: "farmersdelight:tomato",
+                    count: 0,
+                }],
                 output: Ingredient {
                     item: "farmersdelight:example_meal",
                     count: 1,
